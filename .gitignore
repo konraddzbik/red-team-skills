@@ -1,0 +1,15 @@
+# Secrets — the red-team run writes real test-account credentials here.
+# This file must stay ignored. The skill refuses to proceed if it isn't.
+.env
+*.env
+!scripts/redteam.env.example
+
+# Run output (results tables, saved attack scripts, evidence)
+redteam-out/
+security/redteam/out/
+*.redteam.log
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
