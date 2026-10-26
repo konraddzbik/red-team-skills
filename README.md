@@ -49,7 +49,7 @@ It's the **live counterpart** to Anthropic's read-only [`security-review`](https
 ```mermaid
 flowchart TD
     A(["You: red team my app"]) --> G{"Safety gate<br/>fail-closed"}
-    G -- "can't confirm ownership / non-prod DB / .env ignored" --> STOP(["Stop and report"])
+    G -- "any gate check can't be confirmed" --> STOP(["Stop and report"])
     G -- "cleared" --> S["Setup<br/>identify stack · discover auth<br/>provision A/B/admin · seed test rows"]
     S --> F{{"Fan out: 3 attack subagents<br/>RECORD ONLY, concurrent"}}
     F --> G1["Group 1 · Impersonation<br/>HIGH effort"]
@@ -78,7 +78,7 @@ flowchart LR
     subgraph attack["Attack phase: record only"]
       direction TB
       I["impersonation<br/>IDOR · priv-esc · anon-key · token reuse"]
-      U["ui-limits<br/>gating · quota · credit race · redirect"]
+      U["ui-limits<br/>gating · quota · credit race · input · redirect"]
       E["external<br/>XSS · SSRF · cache · preview · injection"]
     end
     T[("Running target<br/>owned · test data")]

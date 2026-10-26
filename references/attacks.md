@@ -235,8 +235,8 @@ Row columns:
 `Result` is one of: **VULNERABLE**, **PASS** (correctly refused), **NOT PROVEN**
 (did not execute), or **N/A** (no such feature / prerequisite unmet). After fixes,
 the before/after table — the headline deliverable — adds *Severity*, *Before*,
-*After*, *Evidence (off→on)*, and *Fix (file:line)* columns for each
-previously-vulnerable item.
+*After*, *Evidence (off→on)*, *Env (before / after)*, and *Fix (file:line)*
+columns for each previously-vulnerable item.
 
 **Subagents do not write this file.** Return the filled rows in your report; the
 main agent is the sole writer and merges all groups into the run's `results.md`.

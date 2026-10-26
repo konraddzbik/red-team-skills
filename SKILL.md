@@ -104,11 +104,13 @@ fit" below.
    seeded rows — do **not** assume the subagent can self-register or read a
    verification email. Note how test accounts will be deleted; if that needs the
    dashboard, it becomes a user hand-off at cleanup.
-3. **Provision progressively — don't front-load.** Start with **Group 1** using a
-   minimal **A + B** (admin is only needed to verify privilege escalation, so add
-   it when you reach attack 3). Groups are independent; provision Group 2 / Group
-   3 accounts only when the run advances to them. Seed one row owned by A and one
-   by B so cross-tenant reads have something to leak. Prefer a seed helper that
+3. **Scope the run, then provision up front for it.** Groups are independent, so
+   you can start light — e.g. **Group 1 only** for a first pass, then widen. But
+   whichever groups you are running **this turn** launch concurrently (see
+   Orchestration), so **all of their accounts must exist before launch**: A + B
+   per group, plus **admin for Group 1** (its privilege-escalation test, attack
+   3). Group 2 and Group 3 need no admin. Seed one row owned by A and one by B per
+   group so cross-tenant reads have something to leak. Prefer a seed helper that
    signs the accounts up through the app's own API over manual creation.
 4. **Credentials:** copy `scripts/redteam.env.example` to `.env` (confirmed
    git-ignored per gate item 3) and fill in only the accounts the current group
@@ -221,7 +223,7 @@ Three cases need extra care:
   proof.
 
 Produce the **before/after table as the headline deliverable**, led by a one-line
-count (`N vulnerable · N fixed · N not proven`) and a Severity column so it
+count (`N vulnerable · N fixed · N not proven · N N/A`) and a Severity column so it
 doubles as a prioritized fix list. This is what the user keeps.
 
 ## Persist the tests
@@ -231,12 +233,16 @@ target repo, wired so the whole suite replays in one command before the next
 release. `scripts/run-all.sh` is a starting harness — adapt it to the project's
 runner.
 
-**Exit-code contract (bake it into every saved script).** A saved attack script
-**asserts the SAFE outcome** and exits **0 when the attack is correctly refused**
-(403 / scoped-empty / escaped / quota-blocked) and **non-zero when the attack
-succeeds** (the vulnerability reproduced). This is what lets `run-all.sh` report a
-regression. A naive script that just sends the request and exits 0 on an HTTP 200
-reports a live vulnerability as green — do not write those.
+**Script contract (bake it into every saved script).** A saved attack script
+**asserts the SAFE outcome** and signals the result two ways: (1) a **sentinel
+line** on stdout — `REDTEAM:REFUSED` when the attack is correctly blocked, or
+`REDTEAM:REPRODUCED` when it succeeds — which is the authoritative signal; and
+(2) a matching **exit code** — `0` when refused (403 / scoped-empty / escaped /
+quota-blocked), non-zero when reproduced. The sentinel is what lets `run-all.sh`
+tell a real regression apart from a broken or timed-out script (which it reports
+as an unverified ERROR that still blocks the ship — never as a silent pass). A
+naive script that just sends the request and exits 0 on an HTTP 200 reports a
+live vulnerability as green — do not write those.
 
 **Non-curl attacks** don't reduce to a simple request assertion — specify their
 replay explicitly so they don't silently drop out of the suite: a headless-

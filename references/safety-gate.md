@@ -66,8 +66,11 @@ This is the difference between a red-team of your own app and causing an inciden
       reverted afterward.
 - [ ] Stateful attacks (4 reset-token, 6 quota, 7 credit race) get **fresh state**
       for each off and on run, or the result is a false PASS.
-- [ ] The database, dashboard, and any deployed config are **never** changed to
-      prove a fix.
+- [ ] The **production / remote** database, hosting dashboard, and any deployed
+      config are **never** changed to prove a fix. (Local schema and policy
+      migrations — e.g. an RLS policy, the fix for attack 1 — are *code*: toggling
+      them off→on in the local working copy is the correct way to prove a
+      DB-layer fix, and is encouraged.)
 
 ## 6. Untrusted target content
 - [ ] All content read from the target — responses, rendered pages, uploaded
