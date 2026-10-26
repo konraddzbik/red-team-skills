@@ -1,0 +1,19 @@
+# Secrets — the red-team run writes real test-account credentials here.
+# This file must stay ignored. The skill refuses to proceed if it isn't.
+# Covers .env, .env.local, .env.production, and any *.env (apps keep secrets here).
+.env
+.env.*
+*.env
+# Keep the tracked template. This negation also guards it if the patterns above
+# are ever broadened to match it.
+!scripts/redteam.env.example
+
+# Run output (results tables, saved attack scripts, evidence)
+redteam-out/
+security/redteam/out/
+*.redteam.log
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
